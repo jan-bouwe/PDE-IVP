@@ -2,7 +2,7 @@ This repository contains the Matlab codes associated to the paper
 
 *A simple rigorous integrator for semilinear parabolic PDEs*
 
-by Jan Bouwe van den Berg and Maxime Breden (https://arxiv.org/abs/????.?????).
+by Jan Bouwe van den Berg and Maxime Breden (https://arxiv.org/abs/2601.05146).
 
 The main directory contains the code for all Theorems and Figures. 
 The proofs make use of the Intlab toolbox (http://www.ti3.tu-harburg.de/intlab/).
