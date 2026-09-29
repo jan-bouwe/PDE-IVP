@@ -5,8 +5,8 @@ function [min_value,rho0,factor] = analyticerrorestimate(prefactor,lambda,phi,K,
 % and phi is represented by its Chebyshev coefficients.
 % K is the leading order decay of the prefactor (prefactor(rho) ~ rho^(-K)),
 % which is used to get an heuristic upper bound for rho.
-% In case a value of rho0 is already given in the last (optional) parameter,
-% the optimization over rho is skipped, and the input value used
+% In case a value of rho0 is already given in the fifth parameter (optional),
+% the optimization over rho is skipped, and the input value used.
 % Also returns the phi-independent (but rho-dependent) factor
 %
 % In case the sixth input argument is provided, 
