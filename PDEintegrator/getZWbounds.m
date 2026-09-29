@@ -206,7 +206,7 @@ for dd = 1:D % dd is i in the paper
             normBD = altzeros([P,1],x{1}(1));
             BQW=BQ*abs(Qinvdd);
             for p=1:P 
-                normBD(p) = max(max((weights(indQ)*(BQW*diag(derabs.^p)))./weights(indQ)),chi(p)*mu);
+                normBD(p) = max(max((weights(indQ)*(BQW*diag(derabs.^(p-1))))./weights(indQ)),chi(p)*mu);
             end
             W(d,dd,dd) = sum(normBD.*normDDg);
         end
