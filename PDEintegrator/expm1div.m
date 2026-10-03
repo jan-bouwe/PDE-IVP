@@ -12,7 +12,7 @@ if altisintval(x(1))
         x2(sup(x)>realmax)=infsup(realmax,Inf); % catch the edge case x2=Inf
     
         % error estimate 
-        % sum_k>=3 r^k/(k+1)! <= r^3/24*sum_k>=0 4!/(k+4)! r^k <= r^3/24*sum_k>=0 k! r^k
+        % sum_k>=3 r^k/(k+1)! <= r^3/24*sum_k>=0 4!/(k+4)! r^k <= r^3/24*sum_k>=0 r^k/k!
         w1=1+x1/2+x1.^2/6-abs(x1).^3/24.*exp(abs(x1));
         w2=1+x2/2+x2.^2/6+abs(x2).^3/24.*exp(abs(x2));
     
@@ -32,9 +32,9 @@ if altisintval(x(1))
         y1r1=intval(rad(y1m));
         y1m=complex(mid(y1m));
      
-        % error comestimate see above    
+        % error estimate see above    
         y1r2=abs(zm).^3/24.*exp(abs(zm));
-        % error estimate sup_z(|f'(z)|)*zr <= sup_z(f(|z|)*zr
+        % error estimate sup_z(|f'(z)|)*zr <= sup_z(f(|z|))*zr
         y1r3=sup(expm1div(abs(x))).*zr;
         y1r=sup(y1r1+y1r2+y1r3);
 

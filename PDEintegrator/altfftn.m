@@ -3,7 +3,7 @@ function y = altfftn(x)
 % for variables of double or intval type
 %
 % for intval type the size of the input (in all dimensions) 
-% have to be powers of 2
+% has to be a power of 2
 
 if altisintval(x(1))
   n = size(x);

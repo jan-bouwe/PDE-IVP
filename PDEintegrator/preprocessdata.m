@@ -15,7 +15,7 @@ function problem = preprocessdata(problem,initialdata,K,NQ,griddata,symmetry,sca
 % keeps track of rounding errors when converting to intervals
 %
 % if griddata.variable is true it will try to generate a good grid
-% if griddata.optimizecheb is true it will try to guess good number of Chebyshec modes
+% if griddata.optimizecheb is true it will try to guess good number of Chebyshev modes
 
 if all(imag(initialdata)==0)
     initialdatareal=true;
@@ -34,7 +34,7 @@ if exist('intval.m','file') && ~isintval(initialdata(1))
     if initialdatareal || initialdataimag
         initialdataradii=eps(initialdata);
     else
-        initialdataradii=sup(intval('sqrt2')*eps(initialdata));
+        initialdataradii=sup(sqrt(intval(2))*eps(initialdata));
     end
     zeroinitialdata=(initialdata==0);
     initialdataradii(zeroinitialdata)=0;

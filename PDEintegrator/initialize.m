@@ -4,7 +4,7 @@
  intlabpath = [];
 
 % If you have intlab provide the path to it below.
-% Comment out the next line if you don't have intlab
+% Uncomment the next line (and adapt the path) if you have intlab
 
 % intlabpath = '~/matlab/intlab/Intlab_V12/';
 

@@ -8,7 +8,7 @@ function [problem,plotdata] = ivpdataKuramotoSivashinsky
 % returns the problem definition, including the initial data 
 % with the initial data setting the number N of Fourier modes
 % the number K of Chebyshev modes (interpolation nodes) in time
-% the number D of domain in the (time) domain decomposition
+% the number D of domains in the (time) domain decomposition
 % (note that D is called M in the latex)
 %
 % the problem definition also includes some constants needed in the proof
@@ -30,10 +30,10 @@ end
 % u_t = - u_{xxxx}  - u_{xx} - 1/2(u^2)_x
 % for x in [0,L] and t in [0,tau]
 
-alpha = 0.127;
+alpha = 127*altone/1000;
 
 L=2*altpi/sqrt(alpha);  
-tau=2.245/alpha*altone;
+tau=(2245*altone/1000)/alpha;
 
 % rescale to spatial domain [0,2*pi] and
 % u_t = - u_{xxxx}  - lambda2*u_{xx} - lambda1*(u^2)_x
@@ -42,8 +42,10 @@ scale.space=L/(2*altpi);
 scale.time=scale.space^4;
 integrationtime=tau/scale.time;
 
-lambda2=scale.time/scale.space^2;
-lambda1=scale.time/scale.space/2;
+% lambda2=scale.time/scale.space^2;
+% lambda1=scale.time/scale.space/2;
+lambda2=1/alpha;
+lambda1=lambda2*scale.space/2;
 
 %% Truncation and grid %%
 
@@ -96,11 +98,11 @@ end
 
 %% Parameters for the proof %%
 
-% weigths in the norms for the Banach space
+% weights in the norms for the Banach space
 nu=1.0001;
 problem.proof.nu=nu;
 
-% a apriori bound on the validation radius
+% an a priori bound on the validation radius
 problem.proof.rstar=2e-1;
 
 % computational constants used in computing exponential integrals:
@@ -121,14 +123,14 @@ problem.pde.order=4;
 if exist('intval.m','file')
   % determine maximum error in rounding, relative to eps
   % for all monomial coefficients
-  alllambda=[lambda1,lambda1];
+  alllambda=[lambda1,lambda2];
   epsfactor=max(sup(intval(rad(alllambda))./eps(mid(alllambda))));
-  % turn relevants coefficient(s) into floats
+  % turn relevant coefficient(s) into floats
   lambda2=mid(lambda2);
   lambda1=mid(lambda1);
 end
 
-% nonlinearity{j} represented the term g^{(j-1)}(u)
+% nonlinearity{j} represents the term g^{(j-1)}(u)
 nonlinearity{2} = -lambda1*u^2;
 nonlinearity{3} = -lambda2*u;
 

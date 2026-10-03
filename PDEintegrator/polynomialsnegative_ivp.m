@@ -9,8 +9,8 @@ function [rmin,eta] = polynomialsnegative_ivp(Y,Z,W)
 % If Y,Z,W are intervals the result is guaranteed via interval arithmetic
 %
 % Y is a column vector bounding the components ||T_m(x)-x_m|| <= Y(m)
-% Z is a matrix bounding the derative components ||D_i T_m(x)|| <= Z(m,i)
-% W is a tensor bounding ||D_i T_m(x+y) + D_i T_m(x)|| <=  sum_j W(m,i,j) ||y_j||
+% Z is a matrix bounding the derivative components ||D_i T_m(x)|| <= Z(m,i)
+% W is a tensor bounding ||D_i T_m(x+y) - D_i T_m(x)|| <=  sum_j W(m,i,j) ||y_j||
 % If the W-bound holds for r<=r_* you will need to check that rmin<=r_* a posteriori
 % i.e. this function does not check that.
 % One may take W(i,j,k) a bound on sup_{|z|<=r_*} ||D_j D_k T_i(x+z)|| but not necessarily
@@ -67,7 +67,7 @@ if ~all(r0>0) || max(abs(dr0)) > convergencetolerance || nanflag
     mbad = find(~goodradii,1);
     disp(['The first problematic domain is ',int2str(mbad)]);
     % discriminant needs to be positive to find inclusion
-    % hence it gives an indication of bad the failure is
+    % hence it gives an indication of how bad the failure is
     rbad=r0;
     rbad(mbad:end)=0;
     cbad=Pf(rbad);

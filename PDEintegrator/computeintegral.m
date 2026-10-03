@@ -132,7 +132,7 @@ phigridmatrix=integrationdata.phigridmatrix;
 
 integrand=altzeros([NNphi,KK+1,KK1+1],phi(1));
 for k=1:KK+1
-    % evaluate the Chebyshev polynomial phi and the integand on quadrature grid
+    % evaluate the Chebyshev polynomial phi and the integrand on quadrature grid
     phiongrid = phi*phigridmatrix{k};% 
     integrand(:,k,:) = explambda{k}.*phiongrid;
 end

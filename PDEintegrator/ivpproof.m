@@ -32,6 +32,20 @@ else
     disp('Proof attempt without interval arithmetic')
 end
 
+for d=1:length(x)
+    xd=altmid(x{d});
+    if strcmp(problem.symmetry,'cosineseries')
+        symmetric=all(imag(xd)==0,'all') && isequal(xd,xd(end:-1:1,:));
+    elseif strcmp(problem.symmetry,'sineseries')
+        symmetric=all(real(xd)==0,'all') && isequal(xd,-xd(end:-1:1,:));
+    else
+        symmetric=true;
+    end
+    if ~symmetric
+        error(['x is not in the ',problem.symmetry,' subspace on domain ',num2str(d)]);
+    end
+end
+
 if ~isfield(problem,'semigroup') 
     problem.semigroup.type='elaborate';
 end

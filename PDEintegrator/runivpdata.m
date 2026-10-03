@@ -4,7 +4,7 @@ function [x,problem,success,rsol,bounds,errorbound] = runivpdata(filename,datadi
 % 
 % save results (data and figure) in the resultdir (default 'results')
 
-if ~exist('resultsdir','var') 
+if ~exist('resultdir','var') 
     dirname='results/';
 elseif isempty(resultdir)
     dirname=[];

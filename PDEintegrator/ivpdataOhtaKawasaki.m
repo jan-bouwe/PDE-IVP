@@ -9,7 +9,7 @@ function [problem,plotdata] = ivpdataOhtaKawasaki
 % the problem definition, including the initial data 
 % with the initial data setting the number N of Fourier modes
 % the number K of Chebyshev modes (interpolation nodes) in time
-% the number D of domain in the (time) domain decomposition
+% the number D of domains in the (time) domain decomposition
 % (note that D is called M in the latex)
 %
 % the problem definition also includes some constants needed in the proof
@@ -40,11 +40,14 @@ tau=30*altone;
 % rescale to spatial domain [0,2*pi] and
 % u_t = -u_{xxxx} + lambda21*(u-u^3)_{xx} + lambda01*(u-m)
 
-scale.space=L/(2*altpi);
-scale.time=gamma^2*scale.space^4;
+% scale.space=L/(2*altpi);
+% scale.time=gamma^2*scale.space^4;
+scale.space=2*altone;
+scale.time=8*scale.space^4;
 integrationtime=tau/scale.time;
 
-lambda21=-scale.time/scale.space^2;
+% lambda21=-scale.time/scale.space^2;
+lambda21=-8*scale.space^2;
 lambda23=-lambda21;
 lambda01=-sigma*scale.time;
 lambda00=-lambda01*m;
@@ -100,11 +103,11 @@ initialdata(N+5)=2*altone/10;
 
 %% Parameters for the proof %%
 
-% weigths in the norms for the Banach space
+% weights in the norms for the Banach space
 nu=1.0001;
 problem.proof.nu=nu;
 
-% a apriori bound on the validation radius
+% an a priori bound on the validation radius
 problem.proof.rstar=2e-1;
 
 % computational constants used in computing exponential integrals:
@@ -126,13 +129,13 @@ if exist('intval.m','file')
   % for all monomial coefficients
   alllambda=[lambda21,lambda23,lambda01,lambda00];
   epsfactor=max(sup(intval(rad(alllambda))./eps(mid(alllambda))));
-  % turn relevants coefficient(s) into floats
+  % turn relevant coefficient(s) into floats
   lambda21=mid(lambda21);
   lambda01=mid(lambda01);
   m=mid(m);
 end
 
-% nonlinearity{j} represented the term g^{(j-1)}(u)
+% nonlinearity{j} represents the term g^{(j-1)}(u)
 nonlinearity{1} = lambda01*(u-m);
 nonlinearity{3} = lambda21*(u-u^3);
 

@@ -1,10 +1,10 @@
 function [min_value,rho0,factor] = analyticerrorestimate(prefactor,lambda,phi,K,rho0,expfactor)
 % Approximately minimizes (over rho>1) the quantity
-% prefactor(rho) * sup_{z in E_rho} |exp(lambda*(z+1))| * sup_{z in E_rho} |phi(rho)|,
-% where E_rho is the Berstein ellipse of size rho 
+% prefactor(rho) * sup_{z in E_rho} |exp(lambda*(z+1))| * sup_{z in E_rho} |phi(z)|,
+% where E_rho is the Bernstein ellipse of size rho 
 % and phi is represented by its Chebyshev coefficients.
 % K is the leading order decay of the prefactor (prefactor(rho) ~ rho^(-K)),
-% which is used to get an heuristic upper bound for rho.
+% which is used to get a heuristic upper bound for rho.
 % In case a value of rho0 is already given in the fifth parameter (optional),
 % the optimization over rho is skipped, and the input value used.
 % Also returns the phi-independent (but rho-dependent) factor

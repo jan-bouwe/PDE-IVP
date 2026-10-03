@@ -16,6 +16,7 @@ D=problem.sol.D;
 maxorder=max([1,nonlinmaxdegree(problem)]);
 Nmax=maxorder*NX;
 ToepV=problem.semigroup.ToepV;
+iv0=(size(ToepV,1)+1)/2;
 fullintegrand=cell(D,1);
 
 reducedintegrandrequested=(nargout>1);
@@ -29,7 +30,7 @@ for d=1:D
     % extend x so that we can use convolutions to compute nonlinearities
     xx=[x{d}(:,K(d)+1:-1:2),x{d}];
                 
-    integranddomaind=altzeros([2*Nmax+1,Kmax+1],x(1));
+    integranddomaind=altzeros([2*Nmax+1,Kmax+1],x{d}(1));
 
     % nonlinear terms
     for p=0:length(problem.pde.polynomials)-1
@@ -50,8 +51,8 @@ for d=1:D
     DNX=(1i*(-NX:NX));
     for p=0:length(problem.pde.polynomials)-1
         if ~isempty(problem.pde.polynomials{p+1})
-            Tv=Tv+diag(DNQ.^p)*toeplitzshift(ToepV(:,d,p+1)); 
-            v0=v0+DNX.^p*ToepV(NQ+1,d,p+1);
+            Tv=Tv+diag(DNQ.^p)*toeplitzshift(ToepV(:,d,p+1),NQ); 
+            v0=v0+DNX.^p*ToepV(iv0,d,p+1);
         end
     end
     linearpart=diag(v0)*xx;
@@ -66,12 +67,12 @@ for d=1:D
             % cosine series: both x and integrand have real coefficients
             integranddomaind=real(integranddomaind);
         elseif strcmp(problem.symmetry,'sineseries')
-            % cosine series: both x and integrand are purely imaginary
+            % sine series: both x and integrand are purely imaginary
             integranddomaind=1i*imag(integranddomaind);
         end
     end
 
-    % deal with the semigroup residue
+    % subtract the defect R = Q*Lambda*Qinv - LN (see fixsemigroup.m)
     semigroupresidue = problem.semigroup.Residue(:,:,d)*xx(indQ,:);
     semigroupresidue = settensorsize(semigroupresidue,[Nmax,Kmax]);
     integranddomaind = integranddomaind - semigroupresidue(:,Kmax+1:2*Kmax+1);

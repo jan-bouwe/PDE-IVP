@@ -1,9 +1,9 @@
 function optimizedchebyshev=generatecheb(problem,griddata)
-% chooses numbers of Cheybshev nodes in the solution
+% chooses numbers of Chebyshev nodes in the solution
 % for each subdomain, based on an estimate of the Ybound
 %
 % In particular:
-% optimizedchebyhev.K (problem.sol.K) 
+% optimizedchebyshev.K (problem.sol.K) 
 %          the number of nodes in the approximate solution
 % optimizedchebyshev.K0 (problem.proof.interpolation.K0)
 %          the number of nodes in the interpolation of the output of the map  
@@ -81,7 +81,7 @@ for d=1:D
     pro1.sol.K=problem.sol.K(d);
     if d>1 && flagsuccessK 
         % overwrite with data from previous domain
-        % if previous step was succcessful
+        % if previous step was successful
         pro1.proof.interpolation.K0=newK0(d-1);
         if abs(newK(d-1)-problem.sol.K(d))>0
             pro1.sol.K=newK(d-1);
@@ -98,7 +98,7 @@ for d=1:D
     % K0 should not be smaller than K
     K0minK=max(K0min,Kmax);
     pro1.proof.interpolation.K0=max(pro1.proof.interpolation.K0,K0minK);
-    pro1.proof.integrals.K1=problem.proof.interpolation.K0(d);
+    pro1.proof.integrals.K1=pro1.proof.interpolation.K0;
 
     pro1.timegrid=problem.timegrid(d:d+1);
     pro1.timegridfloats=problem.timegridfloats(d:d+1);
@@ -163,7 +163,7 @@ for d=1:D
                 stopiteratingK = (flagsuccessK || reachedKmax) && (flagnonsuccessK || reachedKmin);
                 
                 % if we stop iterating K there are some things to take care
-                % of before moving one
+                % of before moving on
                 if stopiteratingK
                     flagsuccessK0=true;            
                     if flagsuccessK
@@ -176,19 +176,21 @@ for d=1:D
                         % K0 should not be smaller than K
                         K0minK=max(K0min,Kvalue);
                         pro1.proof.interpolation.K0=max(K0value-K0step,K0minK);
+                        pro1.proof.integrals.K1=pro1.proof.interpolation.K0;
                     else % stop due to reaching Kmax
                         Kvalue=Kmax;
                         K0value=pro1.proof.interpolation.K0;
                         K0minK=max(K0min,Kvalue);
                         pro1.proof.interpolation.K0=max(pro1.proof.interpolation.K0-K0step,K0minK);
+                        pro1.proof.integrals.K1=pro1.proof.interpolation.K0;
                     end
                 end
             elseif ~reachedK0max
                 % cannot trust interpolation, increase K0
                 pro1.proof.interpolation.K0=min(pro1.proof.interpolation.K0+K0step,K0max);
-                pro1.proof.integrals.K1=problem.proof.interpolation.K0;
+                pro1.proof.integrals.K1=pro1.proof.interpolation.K0;
             else
-                % still unsuccessfull at maximium value of K0
+                % still unsuccessful at maximum value of K0
                 disp('Please increase K0max to optimize for K');
                 K0value=K0max;
                 Kvalue=problem.sol.K(d);
@@ -201,12 +203,12 @@ for d=1:D
                 flagsuccessK0=true;
                 K0value=pro1.proof.interpolation.K0;
                 pro1.proof.interpolation.K0=max(pro1.proof.interpolation.K0-K0step,K0minK);
-                pro1.proof.integrals.K1=problem.proof.interpolation.K0;
+                pro1.proof.integrals.K1=pro1.proof.interpolation.K0;
             else
                 % K0 is now too small (or K1 is too small)
                 flagnonsuccessK0=true;
                 pro1.proof.interpolation.K0=min(pro1.proof.interpolation.K0+K0step,K0max);
-                pro1.proof.integrals.K1=problem.proof.interpolation.K0;
+                pro1.proof.integrals.K1=pro1.proof.interpolation.K0;
             end
             % we stop iterating K0 if we have seen both success and nonsuccess
             % or if we reach minimum or maximum values

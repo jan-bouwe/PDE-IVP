@@ -7,10 +7,12 @@ function [y,problem] = ivpsolve(problem)
 % the problem setup uses the naive semigroup
 % based on the highest order derivative only
 % and ignoring any nonlinear terms.
+% The naive semigroup is only used in the numerics;
+% the proof (ivpproof.m) always uses the elaborate semigroup.
 %
 % outputs symmetric data if the problem is symmetric
 
-% numerical integation of IVP
+% numerical integration of IVP
 disp('Numerical integration');
 problemfloat=problem;
 problemfloat.initial.data=altmid(problemfloat.initial.data);

@@ -6,7 +6,7 @@ function plotsolution(x,problem,plotdata,filename)
 %
 % plotdata may contain
 % plotdata.viewangle : then view(viewangle) is used
-% plotdata.numpoints : then (dafault is [101,101])
+% plotdata.numpoints : number of gridpoints (default is [101,101])
 % plotdata.xfactor : if this 0.5 then half the space-domain is plotted
 % the number of gridpoints in time is numpoints(1) and
 % the number of gridpoints in space is numpoints(2)
@@ -44,7 +44,7 @@ if problem.infinitetime
 end
 
 for d=1:D
-    % time points beloning to d-th domain
+    % time points belonging to d-th domain
     td=(times>tgrid(d) & times<=tgrid(d+1));
     if d==1
         % include left endpoint for first domain

@@ -2,8 +2,8 @@ function mu = boundmu(d,l,N,problem)
 % computes the bound mu needed to estimate 
 % the inverse of the preconditioner for domain decomposition
 
-% Warning: the definition changes slightly in the new paper.
-% This code does not include the exponential.
+% Warning: this returns the logarithm of mu^{(d,l)}_N as defined in the paper;
+% the exponential is applied by the callers.
 
 if l == d
     mu = 0;
@@ -15,11 +15,12 @@ end
 tau=problem.domains/2;
 P=problem.pde.order;
 ToepV=problem.semigroup.ToepV;
+iv0=(size(ToepV,1)+1)/2;
 NQ=problem.semigroup.N;
 
 % only the even derivatives play a role
 % since the odd ones lead to purely imaginary contributions to lambda
-alpha=reshape(real(ToepV(NQ+1,1:d,1:2:P-1)),d,[]);
+alpha=reshape(real(ToepV(iv0,1:d,1:2:P-1)),d,[]);
 Nalpha=ceil(altsup(sqrt(sum(abs(alpha),2))));
 Nmax=max(Nalpha,N);
 

@@ -13,17 +13,18 @@ else
     ipi = pi;
 end
 
-% the Chebyshev nodes are given by cos(theta)
-theta = (K-ind')*ipi/K; 
+% the Chebyshev nodes are given by cos(theta) with theta = (K-j)*pi/K,
+% and cos(theta*k) = cos(pi*mod((K-j)*k,2*K)/K)
+jk = mod((K-(0:K)')*(0:K),2*K);
 
 % M is the transpose of the matrix sending a vector of values at Chebyshev 
 % nodes to a vector of Chebyshev coefficients. That is:
 % if u = [f(x_0);...;f(x_K)], and v = [f_0;...;f_K], where the f_k are such
 % that f = f_0*T_0 + ... + f_K*T_K, the T_k being the Chebyshev polynomials
 % of the first kind, then transpose(M)*u = v.
-M =  cos( theta * ind) / K; 
+M =  cos( (ipi/K) * jk ) / K; 
 M([1,K+1],:) = M([1,K+1],:) / 2;
-M(:,2:K,:) = 2*M(:,2:K); 
+M(:,2:K) = 2*M(:,2:K); 
 
 % b = [b_0;...;b_K], where b_k = int_{-1}^1 T_k(x)dx
 b = 2./(1-ind'.^2);

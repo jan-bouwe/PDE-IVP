@@ -8,12 +8,12 @@ function [success,rsol,bounds,errorbound]=provesol(x,problem)
 % and we assume x is already conjugate symmetric in the Fourier component
 %
 % If the radii polynomial is negative for some positive r, 
-% then success=true and rsol are the succesfull radii 
+% then success=true and rsol are the successful radii 
 %
 % Additionally, bounds contains some additional data about the bounds 
 % (for saving) from which the radii polynomials have been built 
 %
-% If the method is unsuccesfull then success=0 and rsol=NaN
+% If the method is unsuccessful then success=0 and rsol=NaN
 
 success=false;
 rsol=NaN;
@@ -79,7 +79,7 @@ rstarvec=problem.proof.rstar;
 
 if any(isnan(rminvec)) || ~all(rminvec>0)
     % failure :-(
-    disp('Failed due not finding a positive rmin');
+    disp('Failed due to not finding a positive rmin');
 
 elseif all(rminvec <= rstarvec)
     % success :-)

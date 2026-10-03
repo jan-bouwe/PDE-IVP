@@ -3,11 +3,11 @@ function [T,Y,extraouput] = getTYbounds(x,problem)
 % The map T is used in the numerics, the bound Y is used in the proof
 %
 % The extraoutput 
-% (used by generatecheb.m to determine number if Chebyshev nodes)
+% (used by generatecheb.m to determine number of Chebyshev nodes)
 % contains
 % extraouput.bounds1 : the residue from evaluating at interpolation nodes
 %                  including bound on quadrature errors
-%                  (or reather the corresponding interpolation polynomial)
+%                  (or rather the corresponding interpolation polynomial)
 % extraouput.bounds2 : a bound on the interpolation error
 
 % We estimate the C0 norm by computing the C0 norm of a high degree
@@ -31,14 +31,6 @@ D=problem.sol.D;
 symmetry=problem.symmetry;
 
 fullintegrand = getintegrand(x,problem);
-
-x0 = x;
-for d = 1:D
-    x0{d} = x0{d}(:,1);
-end
-problem0 = problem;
-problem0.sol.K = zeros(size(problem.sol.K));
-fullintegrand0 = getintegrand(x0,problem0);
 
 % number of Fourier modes is the same for all domains
 Nmax = (size(fullintegrand{1},1)-1)/2;
@@ -67,7 +59,7 @@ for d = 1:D
     tau=problem.domains(d)/2;
     Q=problem.semigroup.Q(:,:,d);
     Qinv=problem.semigroup.Qinv(:,:,d); 
-    t1 = cheb_grid(K0(d));
+    [t1,theta1] = cheb_grid(K0(d),x{1}(1));
 
     lambda = computelambdatail(Nmax,problem,d);
     % Putting in the correct lambdas for |n|<=N 
@@ -76,9 +68,9 @@ for d = 1:D
     % full nonlinearity 
     phi = fullintegrand{d}; 
 
-    phi0 = fullintegrand0{d}; 
+    phi0 = fullintegrand{d}(:,1);
     phir = phi;
-    phir(:,1) = phir(:,1) - phi0;
+    phir(:,1) = 0;
     LinvQinvphi0 = (1./lambda).*symQinvproject(phi0,Qinv,symmetry);
     Linvphi0 = symQproject(LinvQinvphi0,Q,symmetry);
     extraterm = (tau*(t1+1).*expm1div(tau*lambda*(t1+1))) .* symQinvproject(phi0,Qinv,symmetry);
@@ -118,20 +110,20 @@ for d = 1:D
         Tminusuinterp(indX,1:K(d)+1) = Tinterp(indX,1:K(d)+1) - x{d}; %P_{\tilde K}T(\bu) - \bu
         
         % The C0 norm of the interpolation of T-I on domain d, bounded
-        % using the ell1 norm of.
+        % using the ell1 norm of its Chebyshev coefficients.
         TminusuinterpC0 = normC0(Tminusuinterp);
         
         % Alternative one can bound the C0 norm of the interpolation polynomial
         % by the maximum of the interpolation values times the Lebesgue constant
         if not(problem.infinitetime && d==D)
             Tminusuval = Tval;
-            Tminusuval(indX,:) = Tminusuval(indX,:) - cheb_eval(x{d}, t1);
-            TminusuinterpC0bis = lebesgueconstant(K0(d)) * max(abs(Tminusuval),[],2);                
+            Tminusuval(indX,:) = Tminusuval(indX,:) - cheb_eval(x{d}, t1, theta1);
+            TminusuinterpC0bis = lebesgueconstant(K0(d),x{1}(1)) * max(abs(Tminusuval),[],2);                
             TminusuinterpC0 = min(TminusuinterpC0, TminusuinterpC0bis);
         end
         
         % The interpolation error estimate for (I-P_{\tilde K})T(\bu).
-        % T(\bu) is the sum of an exponential term and an intergral term,
+        % T(\bu) is the sum of an exponential term and an integral term,
         % and we compute an interpolation error bound for each term
         % separately.
         Nlambda=length(lambda);
@@ -157,7 +149,7 @@ for d = 1:D
         interperror= abs(symQproject(interperror,abs(Q),symmetry));
         
         % the crude error bound obtained by taking separate C^0 norms
-        % (once could do this first, and not compute the other estimates if
+        % (one could do this first, and not compute the other estimates if
         % this is already below some threshold, this might speed up the
         % whole proof a bit)
         crude1 = exp(2*tau*max(real(lambda),0)) .* expterm ;
@@ -192,7 +184,7 @@ for d = 1:D
                 timedependent=LQinvgamma+thetau;
                 timedependent=symQproject(abs(timedependent),abs(Q),symmetry);
 
-                Yinterp(D)=normL1(constantterm)+normL1(timedependent);
+                Yinterp(D)=normL1(constantterm,nu)+normL1(timedependent,nu);
             else
                 Yinterp(D)=Inf;
             end

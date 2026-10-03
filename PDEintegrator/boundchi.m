@@ -6,6 +6,7 @@ function chi = boundchi(j,N,d,problem)
 tau=problem.domains/2;
 P=problem.pde.order;
 ToepV=problem.semigroup.ToepV;
+iv0=(size(ToepV,1)+1)/2;
 
 alpha=altzeros([P/2,1],ToepV(1));
 djalpha=altzeros([P/2,1],ToepV(1));
@@ -13,12 +14,13 @@ djalpha=altzeros([P/2,1],ToepV(1));
 % only the even derivatives play a role
 % since the odd ones lead to purely imaginary contributions to lambda
 for p=0:(P/2)-1
-    alpha(p+1)=(-1)^p*real(ToepV(N+1,d,2*p+1));
+    alpha(p+1)=(-1)^p*real(ToepV(iv0,d,2*p+1));
     djalpha(p+1)=abs(alpha(p+1))*abs(2*p-j)/(P-j);
 end
 Ndjalpha=sqrt(sum(djalpha));
+Nalpha=sqrt(sum(abs(alpha)));
 % beyond Nmax, n^j/real(tlambda_n) is an upper bound and is decreasing
-Nmax=ceil(altsup(max([Ndjalpha,N+1])));
+Nmax=floor(altsup(max([Ndjalpha;Nalpha;N])))+1;
 
 % compute the relevant eigenvalues
 nvalues=N+1:Nmax;
@@ -33,6 +35,7 @@ if ~(problem.infinitetime && d==length(tau))
 else
     % infinite domain
     njexp = nvalues.^j.*(-1./rlambda);
+    njexp(~(rlambda<0)) = Inf;
 end
 tildechi=max(njexp);
 
@@ -40,7 +43,7 @@ tildechi=max(njexp);
 % or whether we need to compute a bit further
 tNmax = Nmax;
 rlambda = rlambda(end);
-while tNmax^j/(-rlambda) > tildechi
+while ~(altsup(tNmax^j/(-rlambda)) <= altsup(tildechi))
     tNmax = tNmax+1;
     rlambda = -tNmax^problem.pde.order;
     for p=0:(problem.pde.order/2)-1
@@ -63,6 +66,7 @@ else
     else
         % infinite domain
         njexp = nvalues.^j.*(-1./rlambda);
+    njexp(~(rlambda<0)) = Inf;
     end
     chi = max(tildechi,max(njexp));
 end

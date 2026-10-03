@@ -80,19 +80,21 @@ for dd = 1:D % dd is i in the paper
             gtilde = Dphip(:,Kp+1:2*Kp+1);
             Vp = problem.semigroup.ToepV(:,dd,p);
             % alpha and beta
-            indQp = Np+1+(-NQ:NQ);
-            alpha = gtilde(indQp,:);
-            alpha(:,1) = alpha(:,1) - Vp;
+            alpha = altzeros([4*NQ+1,Kp+1],gtilde(1));
+            for k=1:Kp+1
+                alpha(:,k) = settensorsize(gtilde(:,k),[2*NQ,0]);
+            end
+            alpha(:,1) = alpha(:,1) - settensorsize(Vp,[2*NQ,0]);
             beta = gtilde;
-            beta(Np+1,1) = beta(Np+1,1) - Vp(NQ+1);
+            beta(Np+1,1) = beta(Np+1,1) - Vp((length(Vp)+1)/2);
             normC0beta = normC0(beta);
     
             % finite part 
             for k=1:Kp+1
                 alphak = alpha(:,k);
                 betak = settensorsize(beta(:,k),[NG,0]);
-                Mpk = toeplitzshift(betak);
-                Mpk(indQ,indQ) = toeplitzshift(alphak);
+                Mpk = toeplitzshift(betak,NG);
+                Mpk(indQ,indQ) = toeplitzshift(alphak,NQ);
                 Mpk = der.^(p-1) .* Mpk;
                 GammaT(:,:,k) = GammaT(:,:,k) + Mpk;
             end
@@ -102,8 +104,8 @@ for dd = 1:D % dd is i in the paper
         end
     end
 
-    % adding the R_N term
-    GammaT(indQ,indQ,1) = GammaT(indQ,indQ,1) + problem.semigroup.Residue(:,:,dd);
+    % subtracting the defect R = Q*Lambda*Qinv - LN (see fixsemigroup.m)
+    GammaT(indQ,indQ,1) = GammaT(indQ,indQ,1) - problem.semigroup.Residue(:,:,dd);
 
     % take into account symmetry, multiply by Qinv
     for k=1:Kmax(dd)+1

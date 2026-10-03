@@ -1,5 +1,5 @@
 function semigroup = fixsemigroup(x,problem)
-% semigroup = fixsemigroup(y,problem)
+% semigroup = fixsemigroup(x,problem)
 %
 % computes both the semigroup data (eigenvalues,eigenvectors,inverse)
 % semigroup.Q
@@ -7,7 +7,7 @@ function semigroup = fixsemigroup(x,problem)
 % semigroup.Qinv
 %
 % of the Toeplitz/convolution matrices (one per domain)
-% build up from the vectors (one per nonlinearity) 
+% built up from the vectors (one per nonlinearity) 
 % semigroup.ToepV
 % which is real or purely imaginary if the symmetry imposes it
 % 
@@ -18,7 +18,7 @@ function semigroup = fixsemigroup(x,problem)
 % semigroup.N
 %
 % These may be of interval type or float type
-% depending on the type of y
+% depending on the type of x
 % and the inverse is an outer approximation in the interval case
 
 NQ=problem.semigroup.N;
@@ -31,7 +31,7 @@ semigroup.N=NQ;
 semigroup.Q=altzeros([2*NQ+1,2*NQ+1,D],x{1}(1));
 semigroup.Qinv=altzeros([2*NQ+1,2*NQ+1,D],x{1}(1));
 semigroup.Lambda=altzeros([2*NQ+1,D],x{1}(1));
-semigroup.ToepV=zeros([2*NQ+1,D,P]);
+semigroup.ToepV=zeros([4*NQ+1,D,P]);
 DNQ=(1i*(-NQ:NQ));
 for d=1:D
     %the mean value in the domain
@@ -42,15 +42,15 @@ for d=1:D
         %for each nonlinearity determine the linearization at the mean value
         %averagenonlinearity=convnonlinearity(average,p,1,problem);
         % for each nonlinearity determine the mean of the derivative 
-        nonlinearity=convnonlinearity(xx,p,1,problem);
-        averagenonlinearity=nonlinearity(:,K(d)+1);
-        averagenonlinearity=settensorsize(averagenonlinearity,NQ);
+        [~,nonlinearity]=convnonlinearity(xx,p,1,problem);
+        averagenonlinearity=nonlinearity(:,(size(nonlinearity,2)+1)/2);
+        averagenonlinearity=settensorsize(averagenonlinearity,2*NQ);
         semigroup.ToepV(:,d,p+1)=averagenonlinearity;
     end
 end
 % symmetrize
 semigroup.ToepV=...
-    (semigroup.ToepV+conj(semigroup.ToepV(2*NQ+1:-1:1,:,:)))/2;    
+    (semigroup.ToepV+conj(semigroup.ToepV(end:-1:1,:,:)))/2;    
 if strcmp(problem.symmetry,'cosineseries')
     semigroup.ToepV=real(semigroup.ToepV);
 elseif strcmp(problem.symmetry,'sineseries')
@@ -58,10 +58,10 @@ elseif strcmp(problem.symmetry,'sineseries')
     semigroup.ToepV(:,:,2:2:P)=1i*imag(semigroup.ToepV(:,:,2:2:P));
 end
 for d=1:D
-   % LN is the linearization at the mean value 
+   % LN is the linearization at the mean value (tilde L in the paper)
    LN=diag(-(abs(-NQ:NQ)').^problem.pde.order);
    for p=1:P
-       LN=LN+diag(DNQ.^(p-1))*toeplitzshift(semigroup.ToepV(:,d,p)); 
+       LN=LN+diag(DNQ.^(p-1))*toeplitzshift(semigroup.ToepV(:,d,p),NQ); 
    end
    
    % approximate diagonalization
@@ -92,10 +92,10 @@ end
 semigroup.Residue=altzeros([2*NQ+1,2*NQ+1,D],x{1}(1));
 
 for d=1:D
-    % LN is the linearization at the mean value 
+    % LN is the linearization at the mean value (tilde L in the paper)
     LN=diag(-(abs(-NQ:NQ)').^problem.pde.order);
     for p=1:P
-        LN=LN+diag(DNQ.^(p-1))*toeplitzshift(semigroup.ToepV(:,d,p)); 
+        LN=LN+diag(DNQ.^(p-1))*toeplitzshift(semigroup.ToepV(:,d,p),NQ); 
     end
     semigroup.Residue(:,:,d)=...
             semigroup.Q(:,:,d)*diag(semigroup.Lambda(:,d))*semigroup.Qinv(:,:,d)-LN;

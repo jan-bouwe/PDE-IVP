@@ -16,7 +16,7 @@ end
 % Compute 1/m * sum_j f(x_j)cos(pi*j*k/m). 
 j = (0:m);
 f(:,[1 m+1]) = 1/2*f(:,[1 m+1]);
-a = 1/m*f*cos(ipi/m*(j'*j))'; 
+a = f*cos((ipi/m)*mod(j'*j,2*m))'/m; 
 
 % Rescale
 a(:,m+1) = a(:,m+1)/2; 

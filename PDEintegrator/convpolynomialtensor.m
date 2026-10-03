@@ -28,7 +28,7 @@ if order==0 || lengthoutput==1
         s{j}=N(j)+1;
     end
     if exist('parameters','var') && ~isempty(parameters)
-        fv(s{1:dim})=poly(0,par);
+        fv(s{1:dim})=poly(0,parameters);
     else
         % no parameters needed
         fv(s{1:dim})=poly(0);

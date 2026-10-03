@@ -1,5 +1,5 @@
 function Lambda = lebesgueconstant(K,intvaltest)
-% Computes the Lebesque constant (with interval arithmetic if intvaltest is an interval) 
+% Computes the Lebesgue constant (with interval arithmetic if intvaltest is an interval) 
 % When K is odd, we use an exact formula. When K is even, we use an
 % upper-bound, except for small values (namely K = 2 and K = 4), for which
 % we computed the exact value
